@@ -2,479 +2,454 @@
 <html lang="ja">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DESK LAYOUT PLANNER — 使い方ガイド</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DESK LAYOUT PLANNER — 使い方ガイド</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
-    :root {
-      --bg: #101B30;
-      --panel: #152242;
-      --panel-2: #1B2A4D;
-      --line: #2B3F63;
-      --line-strong: #3C5A87;
-      --cyan: #7FD8F2;
-      --cyan-dim: #4E96AE;
-      --paper: #EEE7D6;
-      --paper-line: #8B8367;
-      --ink: #E9EDF5;
-      --ink-dim: #9CA9C4;
-      --danger: #E2725B;
-    }
+        :root {
+            --bg: #101B30;
+            --panel: #152242;
+            --panel-2: #1B2A4D;
+            --line: #2B3F63;
+            --line-strong: #3C5A87;
+            --cyan: #7FD8F2;
+            --cyan-dim: #4E96AE;
+            --paper: #EEE7D6;
+            --paper-line: #8B8367;
+            --ink: #E9EDF5;
+            --ink-dim: #9CA9C4;
+            --danger: #E2725B;
+        }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body {
-      background:
-        radial-gradient(circle at top, rgba(127,216,242,0.12), transparent 30%),
-        linear-gradient(180deg, var(--bg), #0d1729 100%);
-      color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    a { color: inherit; text-decoration: none; }
-    h1, h2, h3, p { margin: 0; }
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+        }
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(21, 34, 66, 0.82);
-      backdrop-filter: blur(10px);
-    }
+        body {
+            background:
+                radial-gradient(circle at top, rgba(127, 216, 242, 0.12), transparent 30%),
+                linear-gradient(180deg, var(--bg), #0d1729 100%);
+            color: var(--ink);
+            font-family: 'Space Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-    .brand-mark {
-      width: 30px;
-      height: 30px;
-      border: 1.5px solid var(--cyan);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--cyan);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 14px;
-    }
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
 
-    .brand h1 {
-      font-size: 15px;
-      letter-spacing: 0.08em;
-    }
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(21, 34, 66, 0.82);
+            backdrop-filter: blur(10px);
+        }
 
-    .brand p {
-      font-size: 11px;
-      color: var(--ink-dim);
-      margin-top: 2px;
-    }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            border: 1.5px solid var(--cyan);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+        }
 
-    .btn {
-      border: 1px solid var(--line-strong);
-      background: transparent;
-      color: var(--ink-dim);
-      padding: 9px 16px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      cursor: pointer;
-      transition: .15s ease;
-    }
+        .brand h1 {
+            font-size: 15px;
+            letter-spacing: 0.08em;
+        }
 
-    .btn:hover {
-      border-color: var(--cyan);
-      color: var(--cyan);
-    }
+        .brand p {
+            font-size: 11px;
+            color: var(--ink-dim);
+            margin-top: 2px;
+        }
 
-    .btn-primary {
-      background: var(--cyan);
-      border-color: var(--cyan);
-      color: #0C1526;
-      font-weight: 700;
-    }
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .page {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 40px 22px 64px;
-    }
+        .btn {
+            border: 1px solid var(--line-strong);
+            background: transparent;
+            color: var(--ink-dim);
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: .15s ease;
+        }
 
-    .hero {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 22px;
-      align-items: center;
-      padding: 24px 0 12px;
-    }
+        .btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
 
-    .eyebrow {
-      display: inline-block;
-      padding: 7px 10px;
-      border: 1px solid rgba(127,216,242,.45);
-      border-radius: 999px;
-      background: rgba(127,216,242,.06);
-      color: var(--cyan);
-      font-size: 10.5px;
-      letter-spacing: 0.12em;
-      font-family: 'IBM Plex Mono', monospace;
-      text-transform: uppercase;
-    }
+        .btn-primary {
+            background: var(--cyan);
+            border-color: var(--cyan);
+            color: #0C1526;
+            font-weight: 700;
+        }
 
-    .hero h2 {
-      font-size: clamp(38px, 5vw, 72px);
-      line-height: 0.96;
-      letter-spacing: -0.06em;
-      margin-top: 18px;
-      margin-bottom: 18px;
-    }
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 40px 22px 64px;
+        }
 
-    .hero p {
-      font-size: 17px;
-      line-height: 1.8;
-      color: var(--ink-dim);
-      max-width: 640px;
-    }
+        .hero {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 22px;
+            align-items: center;
+            padding: 24px 0 12px;
+        }
 
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 26px;
-      flex-wrap: wrap;
-    }
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 10px;
+            border: 1px solid rgba(127, 216, 242, .45);
+            border-radius: 999px;
+            background: rgba(127, 216, 242, .06);
+            color: var(--cyan);
+            font-size: 10.5px;
+            letter-spacing: 0.12em;
+            font-family: 'IBM Plex Mono', monospace;
+            text-transform: uppercase;
+        }
 
-    .hero-visual {
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      padding: 0;
-      box-shadow: none;
-    }
+        .hero h2 {
+            font-size: clamp(38px, 5vw, 72px);
+            line-height: 0.96;
+            letter-spacing: -0.06em;
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
 
-    .desk-preview {
-      display: block;
-      width: 100%;
-      border-radius: 18px;
-      border: 1px solid var(--line-strong);
-      background: linear-gradient(180deg, rgba(9,17,30,.8), rgba(16,27,48,.95));
-      object-fit: fill;
-      aspect-ratio: 1.35;
-      box-shadow: 0 24px 80px rgba(0,0,0,.24);
-    }
+        .hero p {
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--ink-dim);
+            max-width: 640px;
+        }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 28px;
-    }
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 26px;
+            flex-wrap: wrap;
+        }
 
-    .stat {
-      background: rgba(21,34,66,.82);
-      border: 1px solid var(--line-strong);
-      border-radius: 16px;
-      padding: 16px 18px;
-    }
+        .hero-visual {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+        }
 
-    .stat strong {
-      display: block;
-      font-size: 28px;
-      margin-bottom: 8px;
-      letter-spacing: -0.04em;
-      color: var(--cyan);
-    }
+        .desk-preview {
+            display: block;
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid var(--line-strong);
+            background: linear-gradient(180deg, rgba(9, 17, 30, .8), rgba(16, 27, 48, .95));
+            object-fit: fill;
+            aspect-ratio: 1.35;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .24);
+        }
 
-    .stat span {
-      font-size: 12.5px;
-      color: var(--ink-dim);
-      line-height: 1.6;
-    }
+        .section {
+            margin-top: 56px;
+            border-top: 1px solid var(--line);
+            padding-top: 42px;
+        }
 
-    .section {
-      margin-top: 56px;
-      border-top: 1px solid var(--line);
-      padding-top: 42px;
-    }
+        .section-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 26px;
+        }
 
-    .section-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 26px;
-    }
+        .section-head h3 {
+            font-size: clamp(24px, 3vw, 36px);
+            letter-spacing: -0.04em;
+        }
 
-    .section-head h3 {
-      font-size: clamp(24px, 3vw, 36px);
-      letter-spacing: -0.04em;
-    }
+        .section-head p {
+            color: var(--ink-dim);
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 560px;
+        }
 
-    .section-head p {
-      color: var(--ink-dim);
-      font-size: 14px;
-      line-height: 1.7;
-      max-width: 560px;
-    }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
 
-    .features {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
+        .feature {
+            background: var(--panel);
+            border: 1px solid var(--line-strong);
+            border-radius: 16px;
+            padding: 18px 18px 16px;
+        }
 
-    .feature {
-      background: var(--panel);
-      border: 1px solid var(--line-strong);
-      border-radius: 16px;
-      padding: 18px 18px 16px;
-    }
+        .feature-number {
+            display: inline-flex;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(127, 216, 242, .08);
+            color: var(--cyan);
+            border: 1px solid rgba(127, 216, 242, .4);
+            align-items: center;
+            justify-content: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
 
-    .feature-number {
-      display: inline-flex;
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: rgba(127,216,242,.08);
-      color: var(--cyan);
-      border: 1px solid rgba(127,216,242,.4);
-      align-items: center;
-      justify-content: center;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      margin-bottom: 14px;
-    }
+        .feature h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
 
-    .feature h4 {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
+        .feature p {
+            color: var(--ink-dim);
+            font-size: 13.5px;
+            line-height: 1.8;
+        }
 
-    .feature p {
-      color: var(--ink-dim);
-      font-size: 13.5px;
-      line-height: 1.8;
-    }
+        .triptych {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 22px;
+            margin-top: 26px;
+        }
 
-    .triptych {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 22px;
-      margin-top: 26px;
-    }
+        .panel {
+            background: rgba(21, 34, 66, .82);
+            border: 1px solid var(--line-strong);
+            border-radius: 18px;
+            padding: 20px 20px 18px;
+        }
 
-    .panel {
-      background: rgba(21,34,66,.82);
-      border: 1px solid var(--line-strong);
-      border-radius: 18px;
-      padding: 20px 20px 18px;
-    }
+        .panel h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
 
-    .panel h4 {
-      font-size: 18px;
-      margin-bottom: 12px;
-    }
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 12px;
+        }
 
-    .checklist {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 12px;
-    }
+        .checklist li {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            color: var(--ink-dim);
+            font-size: 14px;
+            line-height: 1.7;
+        }
 
-    .checklist li {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      color: var(--ink-dim);
-      font-size: 14px;
-      line-height: 1.7;
-    }
+        .checklist li::before {
+            content: '✓';
+            color: var(--cyan);
+            font-weight: 700;
+            margin-top: 1px;
+        }
 
-    .checklist li::before {
-      content: '✓';
-      color: var(--cyan);
-      font-weight: 700;
-      margin-top: 1px;
-    }
+        .cta {
+            margin-top: 52px;
+            background: linear-gradient(180deg, rgba(21, 34, 66, .9), rgba(16, 27, 48, .95));
+            border: 1px solid var(--line-strong);
+            border-radius: 20px;
+            padding: 26px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
 
-    .cta {
-      margin-top: 52px;
-      background: linear-gradient(180deg, rgba(21,34,66,.9), rgba(16,27,48,.95));
-      border: 1px solid var(--line-strong);
-      border-radius: 20px;
-      padding: 26px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
+        .cta h3 {
+            font-size: clamp(24px, 3vw, 36px);
+            letter-spacing: -0.04em;
+            margin-bottom: 6px;
+        }
 
-    .cta h3 {
-      font-size: clamp(24px, 3vw, 36px);
-      letter-spacing: -0.04em;
-      margin-bottom: 6px;
-    }
+        .cta p {
+            color: var(--ink-dim);
+            font-size: 14px;
+            line-height: 1.7;
+        }
 
-    .cta p {
-      color: var(--ink-dim);
-      font-size: 14px;
-      line-height: 1.7;
-    }
+        @media (max-width: 900px) {
 
-    @media (max-width: 900px) {
-      .hero, .triptych {
-        grid-template-columns: 1fr;
-      }
+            .hero,
+            .triptych {
+                grid-template-columns: 1fr;
+            }
 
-      .features,
-      .stats {
-        grid-template-columns: 1fr;
-      }
+            .features {
+                grid-template-columns: 1fr;
+            }
 
-      .section-head {
-        align-items: start;
-        flex-direction: column;
-      }
-    }
-  </style>
+            .section-head {
+                align-items: start;
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">▦</div>
-      <div>
-        <h1>DESK LAYOUT PLANNER</h1>
-        <p>モニター・PC配置プランナー</p>
-      </div>
-    </div>
-    <div class="topbar-actions">
-      <a class="btn" href="./dlp.html">デモを開く</a>
-      <a class="btn btn-primary" href="./dlp.html">今すぐ使う</a>
-    </div>
-  </header>
-
-  <main class="page">
-    <section class="hero">
-      <div>
-        <div class="eyebrow">Workspace Planner</div>
-        <h2>自分の理想デスクを、<br>見ながら作る。</h2>
-        <p>
-          DESK LAYOUT PLANNER は、モニター・ノートPC・デスクトップ本体を置く位置と大きさを簡単にシミュレーションできるレイアウトツールです。
-          I字・L字デスクに合わせて配置を調整し、見た目と実際の使い勝手を一緒に確認できます。
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="./dlp.html">レイアウトを作る</a>
-          <a class="btn" href="#features">使い方を見る</a>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">▦</div>
+            <div>
+                <h1>DESK LAYOUT PLANNER</h1>
+                <p>モニター・PC配置プランナー</p>
+            </div>
         </div>
-      </div>
-
-      <div class="hero-visual">
-        <img class="desk-preview" src="./assets/images/preview.png" alt="デスクレイアウトのプレビュー" />
-      </div>
-    </section>
-
-    <section class="stats" aria-label="主要な特徴">
-      <div class="stat">
-        <strong>2</strong>
-        <span>デスク形状の選択<br>I字 / L字の両対応</span>
-      </div>
-      <div class="stat">
-        <strong>3</strong>
-        <span>レイヤー管理<br>床・デスク上・アーム・棚</span>
-      </div>
-      <div class="stat">
-        <strong>∞</strong>
-        <span>試行錯誤がしやすい<br>JSON出力・URL共有対応</span>
-      </div>
-    </section>
-
-    <section class="section" id="features">
-      <div class="section-head">
-        <h3>使い方は簡単</h3>
-        <p>最初の一歩は「デスク形状を決める」ことです。あとはアイテムをドラッグして、見やすい角度と高さを調整していくだけでOKです。</p>
-      </div>
-
-      <div class="features">
-        <article class="feature">
-          <div class="feature-number">01</div>
-          <h4>形状を決める</h4>
-          <p>ワークスペースのサイズに合わせて、I字とL字を切り替え、幅・奥行き・コーナー延長の長さを調整します。</p>
-        </article>
-
-        <article class="feature">
-          <div class="feature-number">02</div>
-          <h4>アイテムを配置</h4>
-          <p>モニター、ノートPC、デスクトップ本体を追加し、ドラッグで配置。回転やサイズ変更もワンクリックでできます。</p>
-        </article>
-
-        <article class="feature">
-          <div class="feature-number">03</div>
-          <h4>共有と保存</h4>
-          <p>JSONファイルで保存したり、共有URLを生成して相手に渡せるので、検討内容をそのまま伝えやすくなります。</p>
-        </article>
-      </div>
-
-      <div class="triptych">
-        <div class="panel">
-          <h4>こんな場面におすすめ</h4>
-          <ul class="checklist">
-            <li>モニターの高さと横並びのバランスを見たい</li>
-            <li>新しいデスクを購入する前に、レイアウトを比較したい</li>
-            <li>働き方に合わせて配置を最適化したい</li>
-          </ul>
+        <div class="topbar-actions">
+            <a class="btn" href="./dlp.html">デモを開く</a>
+            <a class="btn btn-primary" href="./dlp.html">今すぐ使う</a>
         </div>
+    </header>
 
-        <div class="panel">
-          <h4>できること</h4>
-          <ul class="checklist">
-            <li>デスク形状をI字・L字で切り替えられる</li>
-            <li>アイテムのドラッグ移動と回転ができる</li>
-            <li>配置を保存・共有して見せ合える</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+    <main class="page">
+        <section class="hero">
+            <div>
+                <div class="eyebrow">Workspace Planner</div>
+                <h2>自分の理想デスクを、見ながら作る。</h2>
+                <p>
+                    DESK LAYOUT PLANNER は、モニター・ノートPC・デスクトップ本体を置く位置と大きさを簡単にシミュレーションできるレイアウトツールです。
+                    I字・L字デスクに合わせて配置を調整し、見た目と実際の使い勝手を一緒に確認できます。
+                </p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="./dlp.html">レイアウトを作る</a>
+                    <a class="btn" href="#features">使い方を見る</a>
+                </div>
+            </div>
 
-    <section class="cta">
-      <div>
-        <h3>さっそく使ってみましょう</h3>
-        <p>デスクの形状と配置を試しながら、最適なレイアウトを見つけてください。</p>
-      </div>
-      <a class="btn btn-primary" href="./dlp.html">ダッシュボードを開く</a>
-    </section>
-  </main>
+            <div class="hero-visual">
+                <img class="desk-preview" src="./assets/images/preview.png" alt="デスクレイアウトのプレビュー" />
+            </div>
+        </section>
 
-  <script>
-    (function () {
-      const hash = window.location.hash;
-      if (!hash) return;
+        <section class="section" id="features">
+            <div class="section-head">
+                <h3>使い方は簡単</h3>
+                <p>最初の一歩は「デスク形状を決める」ことです。あとはアイテムをドラッグして、見やすい角度と高さを調整していくだけでOKです。</p>
+            </div>
 
-      const targetUrl = new URL('./dlp.html', window.location.href);
-      targetUrl.hash = hash;
-      window.addEventListener('load', () => {
-        window.location.href = targetUrl.toString();
-      });
-    })();
-  </script>
+            <div class="features">
+                <article class="feature">
+                    <div class="feature-number">01</div>
+                    <h4>形状を決める</h4>
+                    <p>ワークスペースのサイズに合わせて、I字とL字を切り替え、幅・奥行き・コーナー延長の長さを調整します。</p>
+                </article>
+
+                <article class="feature">
+                    <div class="feature-number">02</div>
+                    <h4>アイテムを配置</h4>
+                    <p>モニター、ノートPC、デスクトップ本体を追加し、ドラッグで配置。回転やサイズ変更もワンクリックでできます。</p>
+                </article>
+
+                <article class="feature">
+                    <div class="feature-number">03</div>
+                    <h4>共有と保存</h4>
+                    <p>JSONファイルで保存したり、共有URLを生成して相手に渡せるので、検討内容をそのまま伝えやすくなります。</p>
+                </article>
+            </div>
+
+            <div class="triptych">
+                <div class="panel">
+                    <h4>こんな場面におすすめ</h4>
+                    <ul class="checklist">
+                        <li>モニターの高さと横並びのバランスを見たい</li>
+                        <li>新しいデスクを購入する前に、レイアウトを比較したい</li>
+                        <li>働き方に合わせて配置を最適化したい</li>
+                    </ul>
+                </div>
+
+                <div class="panel">
+                    <h4>できること</h4>
+                    <ul class="checklist">
+                        <li>デスク形状をI字・L字で切り替えられる</li>
+                        <li>アイテムのドラッグ移動と回転ができる</li>
+                        <li>配置を保存・共有して見せ合える</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div>
+                <h3>さっそく使ってみましょう</h3>
+                <p>デスクの形状と配置を試しながら、最適なレイアウトを見つけてください。</p>
+            </div>
+            <a class="btn btn-primary" href="./dlp.html">ダッシュボードを開く</a>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const hash = window.location.hash;
+            if (!hash) return;
+
+            const targetUrl = new URL('./dlp.html', window.location.href);
+            targetUrl.hash = hash;
+            window.addEventListener('load', () => {
+                window.location.href = targetUrl.toString();
+            });
+        })();
+    </script>
 </body>
 
 </html>
