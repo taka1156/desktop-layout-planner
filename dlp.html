@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DESK LAYOUT PLANNER — デスク配置プランナー</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --bg: #101B30;
+      --panel: #152242;
+      --panel-2: #1B2A4D;
+      --line: #2B3F63;
+      --line-strong: #3C5A87;
+      --cyan: #7FD8F2;
+      --cyan-dim: #4E96AE;
+      --paper: #EEE7D6;
+      --paper-line: #8B8367;
+      --ink: #E9EDF5;
+      --ink-dim: #9CA9C4;
+      --danger: #E2725B;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Space Grotesk', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    input,
+    select {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---------- Topbar ---------- */
+    .topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid var(--cyan);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+    }
+
+    .brand h1 {
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 11px;
+      color: var(--ink-dim);
+    }
+
+    .btn {
+      border: 1px solid var(--line-strong);
+      background: transparent;
+      color: var(--ink-dim);
+      padding: 7px 14px;
+      border-radius: 5px;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+
+    .btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ---------- Layout ---------- */
+    .sidebar {
+      width: 296px;
+      flex-shrink: 0;
+      margin-top: 56px;
+      height: calc(100% - 56px);
+      overflow-y: auto;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 18px 18px 40px;
+    }
+
+    .intro {
+      font-size: 12px;
+      color: var(--ink-dim);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .panel-section {
+      margin-bottom: 22px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-section:last-child {
+      border-bottom: none;
+    }
+
+    .panel-section h2 {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--cyan);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .segmented {
+      display: flex;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .seg-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--ink-dim);
+      padding: 8px 0;
+      font-size: 12.5px;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .seg-btn+.seg-btn {
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .seg-btn.active {
+      background: var(--cyan);
+      color: #0C1526;
+      font-weight: 600;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 10.5px;
+      color: var(--ink-dim);
+    }
+
+    .field input,
+    .field select {
+      background: var(--panel-2);
+      border: 1px solid var(--line-strong);
+      color: var(--ink);
+      border-radius: 4px;
+      padding: 7px 8px;
+      font-size: 12.5px;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--cyan);
+    }
+
+    .field input[type="text"] {
+      min-width: 0;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--ink-dim);
+      margin-bottom: 10px;
+    }
+
+    .checkbox-row input {
+      accent-color: var(--cyan);
+    }
+
+    .layer-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .layer-chip {
+      background: var(--panel-2);
+      border: 1px solid var(--line-strong);
+      color: var(--ink-dim);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 10.5px;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .layer-chip.active {
+      background: var(--cyan);
+      color: #0C1526;
+      border-color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .data-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .data-actions .icon-btn {
+      flex: 1;
+    }
+
+    .file-import-wrap {
+      margin-top: 8px;
+    }
+
+    .file-import {
+      display: block;
+      width: 100%;
+      background: var(--panel-2);
+      border: 1px solid var(--line-strong);
+      color: var(--ink-dim);
+      border-radius: 5px;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      cursor: pointer;
+    }
+
+    .file-import:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .checkbox-row.compact {
+      margin-bottom: 0;
+    }
+
+    .add-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      background: var(--panel-2);
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      margin: 4px;
+      padding: 9px 10px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12.5px;
+      transition: border-color .15s, transform .1s;
+    }
+
+    .add-btn:hover {
+      border-color: var(--cyan);
+    }
+
+    .add-btn:active {
+      transform: scale(0.98);
+    }
+
+    .mini-swatch {
+      width: 34px;
+      height: 22px;
+      border: 1px solid var(--paper-line);
+      background: var(--paper);
+      border-radius: 2px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mini-swatch.monitor::after {
+      content: '';
+      position: absolute;
+      left: 32%;
+      right: 32%;
+      bottom: 0;
+      height: 22%;
+      background: var(--paper-line);
+    }
+
+    .mini-swatch.laptop {
+      background: linear-gradient(to bottom, #D8D0BA 0 40%, var(--paper) 40% 100%);
+    }
+
+    .mini-swatch.desktop {
+      width: 16px;
+    }
+
+    .mini-swatch.desktop::after {
+      content: '';
+      position: absolute;
+      right: 3px;
+      top: 3px;
+      bottom: 3px;
+      width: 2px;
+      background: repeating-linear-gradient(var(--paper-line), var(--paper-line) 2px, transparent 2px, transparent 5px);
+    }
+
+    #propsSection .props-title {
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .props-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .icon-btn {
+      flex: 1;
+      background: var(--panel-2);
+      border: 1px solid var(--line-strong);
+      color: var(--ink-dim);
+      border-radius: 5px;
+      padding: 8px 4px;
+      font-size: 11.5px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .icon-btn.danger:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    #itemList {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    #itemList li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 7px 9px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--ink-dim);
+    }
+
+    #itemList li.active {
+      border-color: var(--cyan);
+      color: var(--ink);
+    }
+
+    #itemList li .del {
+      color: var(--ink-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    #itemList li .del:hover {
+      color: var(--danger);
+    }
+
+    .empty-note {
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      font-style: italic;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .sort-btn {
+      border: 1px solid var(--line-strong);
+      background: var(--panel-2);
+      color: var(--ink);
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .sort-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ---------- Stage ---------- */
+    .stage {
+      flex: 1;
+      margin-top: 56px;
+      height: calc(100% - 56px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stage-inner {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    #canvas {
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 1px var(--line-strong);
+    }
+
+    #canvas svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #itemLayer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .item {
+      position: absolute;
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .item:active {
+      cursor: grabbing;
+    }
+
+    .item-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      box-sizing: border-box;
+      border: 1px solid var(--paper-line);
+      border-radius: 2px;
+      background: var(--paper);
+    }
+
+    .item.selected .item-icon {
+      box-shadow: 0 0 0 2px var(--cyan), 0 0 0 5px rgba(127, 216, 242, 0.18);
+    }
+
+    .icon-monitor::after {
+      content: '';
+      position: absolute;
+      left: 32%;
+      right: 32%;
+      bottom: 0;
+      height: 16%;
+      background: var(--paper-line);
+    }
+
+    .icon-laptop {
+      background: linear-gradient(to bottom, #D8D0BA 0 38%, var(--paper) 38% 100%);
+    }
+
+    .icon-desktop::after {
+      content: '';
+      position: absolute;
+      right: 8%;
+      top: 10%;
+      bottom: 10%;
+      width: 12%;
+      background: repeating-linear-gradient(var(--paper-line), var(--paper-line) 2px, transparent 2px, transparent 6px);
+    }
+
+    .icon-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      color: #3A3324;
+      pointer-events: none;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .icon-label span {
+      font-size: 8.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .icon-label small {
+      font-size: 7.5px;
+      opacity: 0.75;
+    }
+
+    .stage-footer {
+      border-top: 1px solid var(--line);
+      padding: 9px 20px;
+      font-size: 11px;
+      color: var(--ink-dim);
+      text-align: center;
+      background: var(--panel);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 820px) {
+      .app {
+        flex-direction: column;
+        overflow: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .topbar {
+        position: relative;
+        height: auto;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .sidebar {
+        width: 100%;
+        margin-top: 0;
+        height: auto;
+        max-height: 44vh;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .stage {
+        margin-top: 0;
+        height: auto;
+      }
+
+      .stage-inner {
+        padding: 16px;
+        min-height: 56vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">▦</div>
+      <div>
+        <h1>DESK LAYOUT PLANNER</h1>
+        <p>モニター・PC配置プランナー</p>
+      </div>
+    </div>
+    <button class="btn" id="resetBtn">最初からやり直す</button>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <p class="intro">アイテムをドラッグしてデスク上に配置できます。選択すると回転・サイズ変更・削除ができます。</p>
+
+      <section class="panel-section">
+        <h2>デスクの形状</h2>
+        <div class="segmented" id="shapeToggle">
+          <button class="seg-btn active" data-shape="i">I字</button>
+          <button class="seg-btn" data-shape="l">L字</button>
+        </div>
+
+        <div class="field-grid" id="iFields">
+          <div class="field"><label>幅 (cm)</label><input type="number" id="wI" value="120" step="5">
+          </div>
+          <div class="field"><label>奥行き (cm)</label><input type="number" id="dI" value="60" step="5">
+          </div>
+        </div>
+
+        <div id="lFields" hidden>
+          <div class="field" style="margin-bottom:10px;">
+            <label>コーナーの向き</label>
+            <div class="segmented" id="cornerToggle" style="margin-top:5px;">
+              <button class="seg-btn active" data-corner="right">右に延長</button>
+              <button class="seg-btn" data-corner="left">左に延長</button>
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field"><label>本体 幅 (cm)</label><input type="number" id="w1L" value="140" step="5"></div>
+            <div class="field"><label>本体 奥行き (cm)</label><input type="number" id="d1L" value="65" step="5"></div>
+            <div class="field"><label>延長 幅 (cm)</label><input type="number" id="w2L" value="60" step="5"></div>
+            <div class="field"><label>延長 奥行き (cm)</label><input type="number" id="d2L" value="120" step="5"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>グリッド</h2>
+        <label class="checkbox-row"><input type="checkbox" id="snapToggle" checked> グリッドにスナップ</label>
+        <div class="field"><label>グリッド間隔</label>
+          <select id="gridSize">
+            <option value="1">1 cm</option>
+            <option value="5" selected>5 cm</option>
+            <option value="10">10 cm</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>アイテムを追加</h2>
+        <div class="add-grid">
+          <button class="add-btn" data-type="monitor"><span class="mini-swatch monitor"></span> モニターを追加</button>
+          <button class="add-btn" data-type="laptop"><span class="mini-swatch laptop"></span> ノートPCを追加</button>
+          <button class="add-btn" data-type="desktop"><span class="mini-swatch desktop"></span> デスクトップ本体を追加</button>
+        </div>
+      </section>
+
+      <section class="panel-section" id="customItemSection">
+        <h2>カスタムアイテム</h2>
+        <div class="field-grid">
+          <div class="field" style="grid-column:1 / -1;"><label>ラベル名</label><input type="text" id="customItemName"
+              placeholder="カスタムアイテム" maxlength="24"></div>
+          <div class="field"><label>幅 (cm)</label><input type="number" id="customItemW" value="40" step="1"></div>
+          <div class="field"><label>奥行き (cm)</label><input type="number" id="customItemD" value="15" step="1"></div>
+          <div class="field" style="grid-column:1 / -1;"><label>レイヤー</label><select id="customItemLayer">
+              <option value="floor">床</option>
+              <option value="desk" selected>デスク上</option>
+              <option value="arm">アーム</option>
+              <option value="shelf">棚</option>
+            </select></div>
+        </div>
+        <button class="add-btn" id="addCustomBtn" type="button"><span class="mini-swatch laptop"
+            style="background:linear-gradient(180deg,#dfe1eb 0 45%, #E7DCC5 45% 100%);"></span> カスタムアイテムを追加</button>
+      </section>
+
+      <section class="panel-section">
+        <h2>レイヤー</h2>
+        <div class="segmented" id="layerModeToggle">
+          <button class="seg-btn active" data-mode="separate">個別表示</button>
+          <button class="seg-btn" data-mode="merged">統合表示</button>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label>表示レイヤー</label>
+          <select id="layerFilterSelect">
+            <option value="all" selected>全レイヤー</option>
+            <option value="floor">床</option>
+            <option value="desk">デスク上</option>
+            <option value="arm">アーム</option>
+            <option value="shelf">棚</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="panel-section" id="propsSection" hidden>
+        <h2>選択中のアイテム</h2>
+        <div class="props-title"></div>
+        <div class="field-grid">
+          <div class="field"><label>幅 (cm)</label><input type="number" id="propW"></div>
+          <div class="field"><label>奥行き (cm)</label><input type="number" id="propD"></div>
+          <div class="field"><label>角度 (°)</label><input type="number" id="propRot" min="0" max="360" step="1"></div>
+          <div class="field" style="grid-column:1 / -1;"><label>ラベル名</label><input type="text" id="propLabel"
+              maxlength="24"></div>
+          <div class="field" style="grid-column:1 / -1;"><label>レイヤー</label><select id="propLayer">
+              <option value="arm">アーム</option>
+              <option value="desk">デスク上</option>
+              <option value="shelf">棚</option>
+              <option value="floor">床</option>
+            </select></div>
+        </div>
+        <div class="props-actions">
+          <button class="icon-btn" id="rotateBtn">↻<span id="rotLabel">0°</span></button>
+          <button class="icon-btn" id="dupBtn">⧉<span>複製</span></button>
+          <button class="icon-btn danger" id="delBtn">✕<span>削除</span></button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>データ</h2>
+        <div class="data-actions">
+          <button class="icon-btn" id="exportJsonBtn">⇩<span>JSON出力</span></button>
+          <button class="icon-btn" id="shareUrlBtn">🔗<span>URL共有</span></button>
+        </div>
+        <div class="file-import-wrap">
+          <label class="file-import" for="importJsonInput">JSONを取り込む</label>
+          <input id="importJsonInput" type="file" accept="application/json" hidden>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="list-header">
+          <h2>配置済みアイテム (<span id="itemCount">0</span>)</h2>
+          <button type="button" class="sort-btn" id="sortLayerBtn">レイヤー順にソート</button>
+        </div>
+        <ul id="itemList"></ul>
+      </section>
+    </aside>
+
+    <main class="stage">
+      <div class="stage-inner" id="canvasWrap">
+        <div id="canvas">
+          <div id="itemLayer"></div>
+        </div>
+      </div>
+      <div class="stage-footer">グレーの線がグリッド・青い枠がデスク。デスクの外側は床のスペースとして使えます。</div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+  <script>
+    (function () {
+      const FLOOR_MARGIN = 40;
+      const BOTTOM_EXTRA = 25;
+      const LAYER_META = {
+        arm: { label: 'アーム' },
+        desk: { label: 'デスク上' },
+        shelf: { label: '棚' },
+        floor: { label: '床' }
+      };
+      const LAYER_ORDER = Object.keys(LAYER_META);
+
+      const ITEM_META = {
+        monitor: { label: 'モニター', defaultW: 60, defaultD: 20, minW: 30, maxW: 100, minD: 10, maxD: 35 },
+        laptop: { label: 'ノートPC', defaultW: 35, defaultD: 24, minW: 25, maxW: 45, minD: 18, maxD: 30 },
+        desktop: { label: 'デスクトップ本体', defaultW: 18, defaultD: 42, minW: 12, maxW: 30, minD: 25, maxD: 55 },
+        custom: { label: 'カスタム', defaultW: 30, defaultD: 18, minW: 8, maxW: 200, minD: 8, maxD: 200 }
+      };
+
+      const DEFAULT_DESK = { shape: 'i', w: 120, d: 60, corner: 'right', w1: 140, d1: 65, w2: 60, d2: 120 };
+      const LAYER_PRIORITY = { arm: 0, desk: 1, shelf: 2, floor: 3 };
+
+      let deskConfig = Object.assign({}, DEFAULT_DESK);
+      let items = [];
+      let itemCounter = 0;
+      let selectedId = null;
+      let snapEnabled = true;
+      let gridSize = 5;
+      let scale = 3;
+      let canvasWcm = 0, canvasHcm = 0;
+      let layerMode = 'separate';
+      let layerFilter = 'all';
+
+      const els = {};
+      document.addEventListener('DOMContentLoaded', init);
+
+      function init() {
+        els.canvas = document.getElementById('canvas');
+        els.canvasWrap = document.getElementById('canvasWrap');
+        els.itemLayer = document.getElementById('itemLayer');
+        els.itemList = document.getElementById('itemList');
+        els.itemCount = document.getElementById('itemCount');
+        els.propsSection = document.getElementById('propsSection');
+        els.propsTitle = els.propsSection.querySelector('.props-title');
+        els.propW = document.getElementById('propW');
+        els.propD = document.getElementById('propD');
+        els.propRot = document.getElementById('propRot');
+        els.propLabel = document.getElementById('propLabel');
+        els.propLayer = document.getElementById('propLayer');
+        els.rotLabel = document.getElementById('rotLabel');
+        els.layerFilterSelect = document.getElementById('layerFilterSelect');
+
+        // Shape toggle
+        document.getElementById('shapeToggle').addEventListener('click', e => {
+          const btn = e.target.closest('.seg-btn'); if (!btn) return;
+          deskConfig.shape = btn.dataset.shape;
+          setActiveSeg('shapeToggle', btn);
+          syncDeskShapeUI();
+          renderAll();
+        });
+        document.getElementById('cornerToggle').addEventListener('click', e => {
+          const btn = e.target.closest('.seg-btn'); if (!btn) return;
+          deskConfig.corner = btn.dataset.corner;
+          setActiveSeg('cornerToggle', btn);
+          renderAll();
+        });
+
+        bindNum('wI', 'w'); bindNum('dI', 'd');
+        bindNum('w1L', 'w1'); bindNum('d1L', 'd1'); bindNum('w2L', 'w2'); bindNum('d2L', 'd2');
+
+        document.getElementById('snapToggle').addEventListener('change', e => { snapEnabled = e.target.checked; });
+        document.getElementById('gridSize').addEventListener('change', e => { gridSize = parseFloat(e.target.value); renderAll(); });
+
+        document.querySelectorAll('.add-btn[data-type]').forEach(btn => {
+          btn.addEventListener('click', () => addItem(btn.dataset.type));
+        });
+        document.getElementById('addCustomBtn').addEventListener('click', addCustomItem);
+        document.getElementById('layerModeToggle').addEventListener('click', e => {
+          const btn = e.target.closest('.seg-btn'); if (!btn) return;
+          layerMode = btn.dataset.mode;
+          setActiveSeg('layerModeToggle', btn);
+          if (layerMode === 'merged') {
+            layerFilter = 'all';
+            els.layerFilterSelect.value = 'all';
+          }
+          renderAll();
+        });
+        els.layerFilterSelect.addEventListener('change', e => {
+          layerFilter = e.target.value;
+          if (layerMode === 'merged') {
+            layerMode = 'separate';
+            setActiveSeg('layerModeToggle', document.querySelector('#layerModeToggle .seg-btn[data-mode="separate"]'));
+          }
+          renderAll();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', resetAll);
+        document.getElementById('sortLayerBtn').addEventListener('click', sortItemsByLayer);
+        document.getElementById('exportJsonBtn').addEventListener('click', exportJsonState);
+        document.getElementById('shareUrlBtn').addEventListener('click', createShareUrl);
+        document.getElementById('importJsonInput').addEventListener('change', importJsonState);
+
+        els.propW.addEventListener('input', () => updateSelectedDims());
+        els.propD.addEventListener('input', () => updateSelectedDims());
+        els.propRot.addEventListener('input', () => updateSelectedRotation());
+        els.propLabel.addEventListener('input', () => updateSelectedLabel());
+        els.propLayer.addEventListener('change', () => updateSelectedLayer());
+        document.getElementById('rotateBtn').addEventListener('click', rotateSelected);
+        document.getElementById('dupBtn').addEventListener('click', duplicateSelected);
+        document.getElementById('delBtn').addEventListener('click', deleteSelected);
+
+        els.canvas.addEventListener('pointerdown', e => {
+          if (e.target === els.canvas || e.target.tagName === 'svg' || e.target.tagName === 'rect' || e.target.tagName === 'polygon' || e.target.tagName === 'text') {
+            deselect();
+          }
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(renderAll, 60);
+        });
+
+        const hashState = readShareHash();
+        if (hashState) {
+          applyState(hashState);
+        } else {
+          seedItems();
+        }
+        renderAll();
+      }
+
+      function setActiveSeg(groupId, btn) {
+        document.getElementById(groupId).querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      function syncDeskShapeUI() {
+        const shape = deskConfig.shape === 'l' ? 'l' : 'i';
+        const iFields = document.getElementById('iFields');
+        const lFields = document.getElementById('lFields');
+
+        if (iFields) {
+          iFields.hidden = shape !== 'i';
+          iFields.style.display = shape === 'i' ? 'grid' : 'none';
+        }
+        if (lFields) {
+          lFields.hidden = shape !== 'l';
+          lFields.style.display = shape === 'l' ? 'block' : 'none';
+        }
+
+        if (deskConfig.shape === 'l') {
+          const cornerBtn = document.querySelector('#cornerToggle .seg-btn[data-corner="' + (deskConfig.corner || 'right') + '"]');
+          if (cornerBtn) setActiveSeg('cornerToggle', cornerBtn);
+        }
+      }
+
+      function bindNum(inputId, field) {
+        const el = document.getElementById(inputId);
+        el.addEventListener('input', () => {
+          const v = parseFloat(el.value);
+          if (!isNaN(v) && v > 0) deskConfig[field] = v;
+          renderAll();
+        });
+      }
+
+      function normalizeItem(item) {
+        if (!item) return item;
+        if (!item.layer) item.layer = 'desk';
+        if (!item.label) item.label = item.type === 'custom' ? 'カスタム' : (ITEM_META[item.type] ? ITEM_META[item.type].label : 'アイテム');
+        return item;
+      }
+
+      function getItemName(item) {
+        if (!item) return 'アイテム';
+        return item.label || (item.type === 'custom' ? 'カスタム' : ITEM_META[item.type].label);
+      }
+
+      function getLayerLabel(layerId) {
+        return LAYER_META[layerId] ? LAYER_META[layerId].label : '環境';
+      }
+
+      function seedItems() {
+        items = [];
+        itemCounter = 0;
+        pushItem('monitor', FLOOR_MARGIN + 15, FLOOR_MARGIN + 8, 0, { layer: 'desk' });
+        pushItem('laptop', FLOOR_MARGIN + 15, FLOOR_MARGIN + 34, 0, { layer: 'desk' });
+        selectedId = null;
+      }
+
+      function pushItem(type, x, y, rotation, extra = {}) {
+        const meta = ITEM_META[type] || ITEM_META.custom;
+        const item = {
+          id: 'it' + (itemCounter++),
+          type,
+          x,
+          y,
+          w: extra.w || meta.defaultW,
+          d: extra.d || meta.defaultD,
+          rotation: rotation || 0,
+          layer: extra.layer || 'desk',
+          label: extra.label || meta.label
+        };
+        items.push(normalizeItem(item));
+        return item;
+      }
+
+      function addItem(type) {
+        const meta = ITEM_META[type];
+        const idx = items.length;
+        const x = FLOOR_MARGIN + 10 + (idx % 4) * 14;
+        const y = FLOOR_MARGIN + 10 + Math.floor(idx / 4) * 14;
+        const id = 'it' + (itemCounter++);
+        const item = {
+          id,
+          type,
+          x,
+          y,
+          w: meta.defaultW,
+          d: meta.defaultD,
+          rotation: 0,
+          layer: 'desk',
+          label: meta.label
+        };
+        items.push(normalizeItem(item));
+        selectedId = id;
+        renderAll();
+      }
+
+      function addCustomItem() {
+        const customName = document.getElementById('customItemName').value.trim() || 'カスタム';
+        const w = clampDimension(parseFloat(document.getElementById('customItemW').value), ITEM_META.custom.minW, ITEM_META.custom.maxW, ITEM_META.custom.defaultW);
+        const d = clampDimension(parseFloat(document.getElementById('customItemD').value), ITEM_META.custom.minD, ITEM_META.custom.maxD, ITEM_META.custom.defaultD);
+        const layer = document.getElementById('customItemLayer').value || 'desk';
+        const idx = items.length;
+        const x = FLOOR_MARGIN + 10 + (idx % 4) * 14;
+        const y = FLOOR_MARGIN + 10 + Math.floor(idx / 4) * 14;
+        const id = 'it' + (itemCounter++);
+        const item = { id, type: 'custom', label: customName, x, y, w, d, rotation: 0, layer };
+        items.push(normalizeItem(item));
+        selectedId = id;
+        renderAll();
+      }
+
+      function clampDimension(v, min, max, fallback) {
+        if (!Number.isFinite(v)) return fallback;
+        return Math.min(Math.max(v, min), max);
+      }
+
+      function effDims(item) {
+        const rot = ((item.rotation % 360) + 360) % 360;
+        return (rot === 90 || rot === 270) ? { w: item.d, h: item.w } : { w: item.w, h: item.d };
+      }
+
+      function clampItem(item) {
+        const eff = effDims(item);
+        const maxX = Math.max(canvasWcm - eff.w, 0);
+        const maxY = Math.max(canvasHcm - eff.h, 0);
+        item.x = Math.min(Math.max(item.x, 0), maxX);
+        item.y = Math.min(Math.max(item.y, 0), maxY);
+      }
+
+      function computeCanvasCm() {
+        let bw, bh;
+        if (deskConfig.shape === 'i') { bw = deskConfig.w; bh = deskConfig.d; }
+        else { bw = deskConfig.w1; bh = Math.max(deskConfig.d1, deskConfig.d2); }
+        canvasWcm = bw + FLOOR_MARGIN * 2;
+        canvasHcm = bh + FLOOR_MARGIN * 2 + BOTTOM_EXTRA;
+      }
+
+      function computeScale() {
+        const availW = Math.max(200, els.canvasWrap.clientWidth - 24);
+        const availH = Math.max(200, els.canvasWrap.clientHeight - 24);
+        let s = Math.min(availW / canvasWcm, availH / canvasHcm);
+        scale = Math.max(1.6, Math.min(s, 5.5));
+      }
+
+      function renderAll() {
+        syncDeskShapeUI();
+        computeCanvasCm();
+        computeScale();
+        els.canvas.style.width = (canvasWcm * scale) + 'px';
+        els.canvas.style.height = (canvasHcm * scale) + 'px';
+        drawDeskSVG();
+        items.forEach(item => normalizeItem(item));
+        items.forEach(clampItem);
+        renderItems();
+        renderItemList();
+        renderProps();
+      }
+
+      function drawDeskSVG() {
+        const m = FLOOR_MARGIN;
+        let pts, labels = [];
+        if (deskConfig.shape === 'i') {
+          const { w, d } = deskConfig;
+          pts = [[m, m], [m + w, m], [m + w, m + d], [m, m + d]];
+          labels.push({ x: m + 6, y: m + 10, text: `${w}×${d}cm` });
+        } else {
+          const { w1, d1, w2, d2, corner } = deskConfig;
+          if (corner === 'right') {
+            pts = [[m, m], [m + w1, m], [m + w1, m + d2], [m + w1 - w2, m + d2], [m + w1 - w2, m + d1], [m, m + d1]];
+            labels.push({ x: m + 6, y: m + 10, text: `${w1}×${d1}cm` });
+            labels.push({ x: m + w1 - w2 + 6, y: m + d1 + 12, text: `${w2}×${d2 - d1}cm` });
+          } else {
+            pts = [[m, m], [m + w1, m], [m + w1, m + d1], [m + w2, m + d1], [m + w2, m + d2], [m, m + d2]];
+            labels.push({ x: m + 6, y: m + 10, text: `${w1}×${d1}cm` });
+            labels.push({ x: m + 6, y: m + d1 + 12, text: `${w2}×${d2 - d1}cm` });
+          }
+        }
+        const ptsStr = pts.map(p => p.join(',')).join(' ');
+        const labelsSvg = labels.map(l => `<text x="${l.x}" y="${l.y}" font-family="'IBM Plex Mono',monospace" font-size="4.2" fill="#7FD8F2" opacity="0.85">${l.text}</text>`).join('');
+
+        els.canvas.querySelector('svg')?.remove();
+        const svgWrap = document.createElement('div');
+        svgWrap.innerHTML = `
+      <svg viewBox="0 0 ${canvasWcm} ${canvasHcm}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;">
+        <defs>
+          <pattern id="pSmall" width="${gridSize}" height="${gridSize}" patternUnits="userSpaceOnUse">
+            <path d="M ${gridSize} 0 L 0 0 0 ${gridSize}" fill="none" stroke="#22304E" stroke-width="0.12"/>
+          </pattern>
+          <pattern id="pBig" width="50" height="50" patternUnits="userSpaceOnUse">
+            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#3C5A87" stroke-width="0.25"/>
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="${canvasWcm}" height="${canvasHcm}" fill="#101B30"/>
+        <rect x="0" y="0" width="${canvasWcm}" height="${canvasHcm}" fill="url(#pSmall)"/>
+        <rect x="0" y="0" width="${canvasWcm}" height="${canvasHcm}" fill="url(#pBig)"/>
+        <polygon points="${ptsStr}" fill="rgba(238,231,214,0.07)" stroke="#7FD8F2" stroke-width="0.45" stroke-linejoin="round"/>
+        ${labelsSvg}
+      </svg>`;
+        els.canvas.insertBefore(svgWrap.firstElementChild, els.itemLayer);
+      }
+
+      function getVisibleItems() {
+        return items.filter(item => {
+          if (layerMode === 'merged') return true;
+          if (layerFilter === 'all') return true;
+          return item.layer === layerFilter;
+        });
+      }
+
+      function renderItems() {
+        els.itemLayer.innerHTML = '';
+        const visibleItems = getVisibleItems();
+
+        visibleItems.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'item item-' + item.type + (item.id === selectedId ? ' selected' : '');
+          div.dataset.id = item.id;
+          div.style.zIndex = String(20 + LAYER_ORDER.indexOf(item.layer || 'desk') + (item.id === selectedId ? 100 : 0));
+          positionItemDiv(div, item);
+
+          const icon = document.createElement('div');
+          icon.className = 'item-icon icon-' + item.type;
+          icon.style.width = (item.w * scale) + 'px';
+          icon.style.height = (item.d * scale) + 'px';
+          icon.style.transform = `translate(-50%,-50%) rotate(${item.rotation}deg)`;
+          icon.style.borderColor = item.layer === 'arm' ? 'rgba(127,216,242,.85)' : 'var(--paper-line)';
+
+          const label = document.createElement('div');
+          label.className = 'icon-label';
+          label.innerHTML = `<span>${getItemName(item)}</span><small>${item.w}×${item.d}</small>`;
+          icon.appendChild(label);
+          div.appendChild(icon);
+
+          attachDrag(div, item);
+          els.itemLayer.appendChild(div);
+        });
+      }
+
+      function positionItemDiv(div, item) {
+        const eff = effDims(item);
+        div.style.left = (item.x * scale) + 'px';
+        div.style.top = (item.y * scale) + 'px';
+        div.style.width = (eff.w * scale) + 'px';
+        div.style.height = (eff.h * scale) + 'px';
+      }
+
+      function attachDrag(div, item) {
+        div.addEventListener('pointerdown', e => {
+          if (e.button !== undefined && e.button !== 0) return;
+          e.preventDefault();
+          selectItem(item.id);
+          div.setPointerCapture(e.pointerId);
+          const startX = e.clientX, startY = e.clientY, origX = item.x, origY = item.y;
+
+          function onMove(ev) {
+            const dxCm = (ev.clientX - startX) / scale;
+            const dyCm = (ev.clientY - startY) / scale;
+            let nx = origX + dxCm, ny = origY + dyCm;
+            if (snapEnabled) { nx = Math.round(nx / gridSize) * gridSize; ny = Math.round(ny / gridSize) * gridSize; }
+            item.x = nx; item.y = ny;
+            clampItem(item);
+            positionItemDiv(div, item);
+          }
+          function onUp() {
+            div.removeEventListener('pointermove', onMove);
+            div.removeEventListener('pointerup', onUp);
+            div.removeEventListener('pointercancel', onUp);
+          }
+          div.addEventListener('pointermove', onMove);
+          div.addEventListener('pointerup', onUp);
+          div.addEventListener('pointercancel', onUp);
+        });
+      }
+
+      function selectItem(id) {
+        selectedId = id;
+        document.querySelectorAll('.item').forEach(d => d.classList.toggle('selected', d.dataset.id === id));
+        renderProps();
+        highlightItemList();
+      }
+
+      function deselect() {
+        selectedId = null;
+        document.querySelectorAll('.item').forEach(d => d.classList.remove('selected'));
+        renderProps();
+        highlightItemList();
+      }
+
+      function getSelected() { return items.find(i => i.id === selectedId) || null; }
+
+      function renderProps() {
+        const item = getSelected();
+        if (!item) { els.propsSection.hidden = true; return; }
+        els.propsSection.hidden = false;
+        els.propsTitle.textContent = getItemName(item);
+        els.propW.value = item.w;
+        els.propD.value = item.d;
+        els.propRot.value = item.rotation;
+        if (document.activeElement !== els.propLabel) {
+          els.propLabel.value = item.label || '';
+        }
+        els.propLayer.value = item.layer || 'desk';
+        els.rotLabel.textContent = item.rotation + '°';
+      }
+
+      function updateSelectedDims() {
+        const item = getSelected(); if (!item) return;
+        const meta = ITEM_META[item.type] || ITEM_META.custom;
+        let w = parseFloat(els.propW.value), d = parseFloat(els.propD.value);
+        if (!isNaN(w)) item.w = Math.min(Math.max(w, 1), meta.maxW);
+        if (!isNaN(d)) item.d = Math.min(Math.max(d, 1), meta.maxD);
+        clampItem(item);
+        renderAll();
+      }
+
+      function updateSelectedRotation() {
+        const item = getSelected(); if (!item) return;
+        const v = parseFloat(els.propRot.value);
+        item.rotation = Number.isFinite(v) ? ((v % 360) + 360) % 360 : item.rotation;
+        clampItem(item);
+        renderAll();
+      }
+
+      function updateSelectedLabel() {
+        const item = getSelected(); if (!item) return;
+        const next = els.propLabel.value;
+        item.label = next;
+        renderItems();
+        renderItemList();
+        renderProps();
+      }
+
+      function updateSelectedLayer() {
+        const item = getSelected(); if (!item) return;
+        item.layer = els.propLayer.value || 'desk';
+        renderAll();
+      }
+
+      function rotateSelected() {
+        const item = getSelected(); if (!item) return;
+        item.rotation = (item.rotation + 90) % 360;
+        clampItem(item);
+        renderAll();
+      }
+
+      function duplicateSelected() {
+        const item = getSelected(); if (!item) return;
+        const clone = Object.assign({}, item, { id: 'it' + (itemCounter++), x: item.x + 8, y: item.y + 8 });
+        items.push(normalizeItem(clone));
+        selectedId = clone.id;
+        renderAll();
+      }
+
+      function deleteSelected() {
+        const item = getSelected(); if (!item) return;
+        items = items.filter(i => i.id !== item.id);
+        selectedId = null;
+        renderAll();
+      }
+
+      function sortItemsByLayer() {
+        items = items.slice().sort((a, b) => {
+          const priorityDiff = (LAYER_PRIORITY[a.layer] ?? 99) - (LAYER_PRIORITY[b.layer] ?? 99);
+          if (priorityDiff !== 0) return priorityDiff;
+          return 0;
+        });
+        renderAll();
+      }
+
+      function reorderVisibleItems(fromId, toId) {
+        const visibleItems = getVisibleItems();
+        const fromIndex = visibleItems.findIndex(item => item.id === fromId);
+        const toIndex = visibleItems.findIndex(item => item.id === toId);
+        if (fromIndex < 0 || toIndex < 0) return;
+
+        const reorderedVisible = [...visibleItems];
+        const [moved] = reorderedVisible.splice(fromIndex, 1);
+        reorderedVisible.splice(toIndex, 0, moved);
+
+        const visibleIds = reorderedVisible.map(item => item.id);
+        const hiddenIds = items.map(item => item.id).filter(id => !visibleIds.includes(id));
+        const nextOrder = [...visibleIds, ...hiddenIds];
+
+        items = nextOrder.map(id => items.find(item => item.id === id)).filter(Boolean);
+        renderAll();
+      }
+
+      function renderItemList() {
+        const visibleItems = getVisibleItems();
+        els.itemCount.textContent = String(visibleItems.length);
+        els.itemList.innerHTML = '';
+        if (visibleItems.length === 0) {
+          const p = document.createElement('p');
+          p.className = 'empty-note';
+          p.textContent = 'まだ表示中のアイテムがありません。';
+          els.itemList.appendChild(p);
+          return;
+        }
+        visibleItems.forEach(item => {
+          const li = document.createElement('li');
+          li.dataset.id = item.id;
+          li.draggable = true;
+          if (item.id === selectedId) li.classList.add('active');
+          const info = document.createElement('span');
+          info.textContent = `${getItemName(item)} ・ ${item.w}×${item.d}cm ・ ${getLayerLabel(item.layer)}`;
+          const del = document.createElement('button');
+          del.className = 'del'; del.textContent = '✕';
+          del.addEventListener('click', ev => {
+            ev.stopPropagation();
+            items = items.filter(i => i.id !== item.id);
+            if (selectedId === item.id) selectedId = null;
+            renderAll();
+          });
+          li.appendChild(info); li.appendChild(del);
+          li.addEventListener('click', () => selectItem(item.id));
+          li.addEventListener('dragstart', ev => {
+            ev.dataTransfer.effectAllowed = 'move';
+            ev.dataTransfer.setData('text/plain', item.id);
+            li.classList.add('dragging');
+          });
+          li.addEventListener('dragover', ev => {
+            ev.preventDefault();
+            ev.dataTransfer.dropEffect = 'move';
+          });
+          li.addEventListener('drop', ev => {
+            ev.preventDefault();
+            const fromId = ev.dataTransfer.getData('text/plain') || null;
+            if (fromId && fromId !== item.id) reorderVisibleItems(fromId, item.id);
+          });
+          li.addEventListener('dragend', () => li.classList.remove('dragging'));
+          els.itemList.appendChild(li);
+        });
+      }
+
+      function highlightItemList() {
+        els.itemList.querySelectorAll('li').forEach(li => {
+          li.classList.toggle('active', li.dataset.id === selectedId);
+        });
+      }
+
+      function readShareHash() {
+        const hash = window.location.hash.replace(/^#/, '');
+        if (!hash) return null;
+        const encoded = hash.startsWith('!') ? hash.slice(1) : hash;
+        const decoded = LZString ? LZString.decompressFromEncodedURIComponent(encoded) : null;
+        if (!decoded) return null;
+        try {
+          const data = JSON.parse(decoded);
+          if (data && Array.isArray(data.items)) return data;
+        } catch (err) {
+          console.warn('Failed to parse state from URL', err);
+        }
+        return null;
+      }
+
+      function applyState(state) {
+        if (!state) return;
+        if (state.deskConfig) deskConfig = Object.assign({}, DEFAULT_DESK, state.deskConfig);
+        if (state.snapEnabled !== undefined) snapEnabled = !!state.snapEnabled;
+        if (state.gridSize) gridSize = Number(state.gridSize) || 5;
+        if (state.layerMode) layerMode = state.layerMode;
+        if (state.layerFilter) layerFilter = state.layerFilter;
+        items = Array.isArray(state.items) ? state.items.map(normalizeItem) : [];
+        itemCounter = Math.max(items.length, 0) + 1;
+        selectedId = state.selectedId || null;
+        document.getElementById('snapToggle').checked = snapEnabled;
+        document.getElementById('gridSize').value = String(gridSize);
+        document.getElementById('layerFilterSelect').value = layerFilter || 'all';
+        setActiveSeg('layerModeToggle', document.querySelector(`#layerModeToggle .seg-btn[data-mode="${layerMode || 'separate'}"]`) || document.querySelector('#layerModeToggle .seg-btn[data-mode="separate"]'));
+        syncDeskShapeUI();
+        setActiveSeg('shapeToggle', document.querySelector(`#shapeToggle .seg-btn[data-shape="${deskConfig.shape || 'i'}"]`) || document.querySelector('#shapeToggle .seg-btn[data-shape="i"]'));
+        syncDeskShapeUI();
+        document.getElementById('wI').value = deskConfig.w;
+        document.getElementById('dI').value = deskConfig.d;
+        document.getElementById('w1L').value = deskConfig.w1;
+        document.getElementById('d1L').value = deskConfig.d1;
+        document.getElementById('w2L').value = deskConfig.w2;
+        document.getElementById('d2L').value = deskConfig.d2;
+        if (deskConfig.shape === 'l') { document.querySelector(`#cornerToggle .seg-btn[data-corner="${deskConfig.corner || 'right'}"]`).click(); }
+      }
+
+      function getStateSnapshot() {
+        return {
+          deskConfig: Object.assign({}, deskConfig),
+          items: items.map(item => Object.assign({}, item)),
+          selectedId,
+          snapEnabled,
+          gridSize,
+          layerMode,
+          layerFilter
+        };
+      }
+
+      function exportJsonState() {
+        const json = JSON.stringify(getStateSnapshot(), null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'desk-layout.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function importJsonState(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = JSON.parse(String(reader.result));
+            if (data && Array.isArray(data.items)) {
+              applyState(data);
+              renderAll();
+            } else {
+              throw new Error('Invalid JSON');
+            }
+          } catch (err) {
+            alert('JSONの読み込みに失敗しました。');
+          } finally {
+            event.target.value = '';
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function createShareUrl() {
+        const snapshot = JSON.stringify(getStateSnapshot());
+        if (!LZString) {
+          alert('URL共有用のライブラリが読み込めていません。');
+          return;
+        }
+        const encoded = LZString.compressToEncodedURIComponent(snapshot);
+        const shareUrl = new URL(window.location.href);
+        shareUrl.hash = '!' + encoded;
+        window.location.hash = shareUrl.hash;
+        const finalUrl = shareUrl.toString();
+        try {
+          navigator.clipboard.writeText(finalUrl);
+          alert('共有URLをコピーしました。');
+        } catch (error) {
+          window.prompt('共有URLをコピーしてください', finalUrl);
+        }
+      }
+
+      function resetAll() {
+        deskConfig = Object.assign({}, DEFAULT_DESK);
+        document.getElementById('wI').value = deskConfig.w;
+        document.getElementById('dI').value = deskConfig.d;
+        document.getElementById('w1L').value = deskConfig.w1;
+        document.getElementById('d1L').value = deskConfig.d1;
+        document.getElementById('w2L').value = deskConfig.w2;
+        document.getElementById('d2L').value = deskConfig.d2;
+        setActiveSeg('shapeToggle', document.querySelector('#shapeToggle .seg-btn[data-shape="i"]'));
+        setActiveSeg('cornerToggle', document.querySelector('#cornerToggle .seg-btn[data-corner="right"]'));
+        syncDeskShapeUI();
+        layerMode = 'separate';
+        layerFilter = 'all';
+        document.getElementById('layerFilterSelect').value = 'all';
+        setActiveSeg('layerModeToggle', document.querySelector('#layerModeToggle .seg-btn[data-mode="separate"]'));
+        seedItems();
+        renderAll();
+      }
+    })();
+  </script>
+</body>
+
+</html>
