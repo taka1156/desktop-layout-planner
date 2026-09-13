@@ -62,6 +62,58 @@
       overflow: hidden;
     }
 
+    body.view-mode-hidden .topbar,
+    body.view-mode-hidden .sidebar {
+      display: none;
+    }
+
+    body.view-mode-hidden .app {
+      display: block;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body.view-mode-hidden .stage {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      min-width: 0;
+      flex: 1 1 auto;
+      border-left: none;
+      overflow: hidden;
+    }
+
+    body.view-mode-hidden .stage-inner {
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.view-mode-hidden .stage-footer {
+      display: none;
+    }
+
+    .view-mode-dock {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 40;
+      display: none;
+    }
+
+    body.view-mode-hidden .view-mode-dock {
+      display: block;
+    }
+
+    .view-mode-dock .btn {
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+      background: rgba(21, 34, 66, 0.9);
+      backdrop-filter: blur(8px);
+    }
+
     /* ---------- Topbar ---------- */
     .topbar {
       position: absolute;
@@ -639,7 +691,14 @@
         <p>モニター・PC配置プランナー</p>
       </div>
     </div>
-    <button class="btn" id="resetBtn">最初からやり直す</button>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button class="btn" id="viewModeToggleBtn" type="button">UIを非表示</button>
+      <button class="btn" id="resetBtn">最初からやり直す</button>
+    </div>
+  </div>
+
+  <div class="view-mode-dock">
+    <button class="btn" id="viewModeRestoreBtn" type="button">UIを表示</button>
   </div>
 
   <div class="app">
@@ -826,6 +885,9 @@
       document.addEventListener('DOMContentLoaded', init);
 
       function init() {
+        const viewMode = getViewModeFromParams();
+        applyViewMode(viewMode);
+
         els.canvas = document.getElementById('canvas');
         els.canvasWrap = document.getElementById('canvasWrap');
         els.itemLayer = document.getElementById('itemLayer');
@@ -885,6 +947,19 @@
           renderAll();
         });
 
+        const viewModeToggleBtn = document.getElementById('viewModeToggleBtn');
+        if (viewModeToggleBtn) {
+          viewModeToggleBtn.addEventListener('click', () => {
+            const mode = document.body.dataset.viewMode === 'hidden' ? 'show' : 'hidden';
+            setViewMode(mode);
+          });
+        }
+
+        const viewModeRestoreBtn = document.getElementById('viewModeRestoreBtn');
+        if (viewModeRestoreBtn) {
+          viewModeRestoreBtn.addEventListener('click', () => setViewMode('show'));
+        }
+
         document.getElementById('resetBtn').addEventListener('click', resetAll);
         document.getElementById('sortLayerBtn').addEventListener('click', sortItemsByLayer);
         document.getElementById('exportJsonBtn').addEventListener('click', exportJsonState);
@@ -924,6 +999,39 @@
       function setActiveSeg(groupId, btn) {
         document.getElementById(groupId).querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+      }
+
+      function getViewModeFromParams() {
+        const params = new URLSearchParams(window.location.search);
+        const raw = params.get('view') ?? params.get('ui') ?? params.get('showUi');
+        if (!raw) return 'show';
+        const value = String(raw).trim().toLowerCase();
+        if (['hidden', 'hide', '0', 'false', 'none'].includes(value)) return 'hidden';
+        if (['show', 'visible', '1', 'true', 'full'].includes(value)) return 'show';
+        return 'show';
+      }
+
+      function applyViewMode(mode) {
+        const hidden = mode === 'hidden';
+        document.body.classList.toggle('view-mode-hidden', hidden);
+        document.body.dataset.viewMode = hidden ? 'hidden' : 'show';
+        const btn = document.getElementById('viewModeToggleBtn');
+        if (btn) {
+          btn.textContent = hidden ? 'UIを表示' : 'UIを非表示';
+          btn.title = hidden ? '通常表示に戻す' : 'UIを非表示にする';
+        }
+      }
+
+      function setViewMode(mode) {
+        const nextMode = mode === 'hidden' ? 'hidden' : 'show';
+        applyViewMode(nextMode);
+
+        const url = new URL(window.location.href);
+        url.searchParams.delete('view');
+        url.searchParams.delete('ui');
+        url.searchParams.delete('showUi');
+        url.searchParams.set('view', nextMode);
+        history.replaceState({}, '', url.toString());
       }
 
       function syncDeskShapeUI() {
