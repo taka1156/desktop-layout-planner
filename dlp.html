@@ -230,7 +230,8 @@
 
     /* ---------- Layout ---------- */
     .sidebar {
-      width: 296px;
+      position: relative;
+      width: 360px;
       flex-shrink: 0;
       margin-top: 56px;
       height: calc(100% - 56px);
@@ -238,6 +239,21 @@
       background: var(--panel);
       border-right: 1px solid var(--line);
       padding: 18px 18px 40px;
+      min-width: 300px;
+      max-width: 520px;
+      resize: horizontal;
+      overflow: auto;
+    }
+
+    .sidebar::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 8px;
+      height: 100%;
+      cursor: col-resize;
+      background: linear-gradient(to right, transparent, rgba(127, 216, 242, 0.12));
     }
 
     .intro {
@@ -263,6 +279,72 @@
       color: var(--cyan);
       margin-bottom: 12px;
       font-weight: 600;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .section-title .title-label {
+      display: inline;
+      white-space: nowrap;
+    }
+
+    #itemCount {
+      display: inline-block;
+      min-width: 1.2em;
+      text-align: center;
+    }
+
+    .help-tip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      color: var(--ink-dim);
+      background: rgba(127, 216, 242, 0.06);
+      font-size: 11px;
+      line-height: 1;
+      font-family: 'IBM Plex Mono', monospace;
+      cursor: help;
+      user-select: none;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .help-tooltip {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1000;
+      max-width: 260px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(12, 21, 38, 0.96);
+      border: 1px solid rgba(127, 216, 242, 0.4);
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    }
+
+    .help-tip:hover,
+    .help-tip:focus-visible {
+      border-color: var(--cyan);
+      color: var(--cyan);
     }
 
     .segmented {
@@ -752,12 +834,14 @@
     <button class="btn" id="viewModeRestoreBtn" type="button">UIを表示</button>
   </div>
 
+  <div id="helpTooltip" class="help-tooltip" aria-live="polite"></div>
+
   <div class="app">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebarPanel">
       <p class="intro">アイテムをドラッグしてデスク上に配置できます。選択すると回転・サイズ変更・削除ができます。</p>
 
       <section class="panel-section">
-        <h2>デスクの形状</h2>
+        <h2 class="section-title"><span class="title-label">デスクの形状</span><span class="help-tip" tabindex="0" title="I字は通常の直線デスク、L字はコーナーを作りたいときに使います。形状を変えると配置可能範囲も変わるので、最初に決めておくと作業しやすいです。" data-tip="I字は通常の直線デスク、L字はコーナーを作りたいときに使います。形状を変えると配置可能範囲も変わるので、最初に決めておくと作業しやすいです。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <div class="segmented" id="shapeToggle">
           <button class="seg-btn active" data-shape="i">I字</button>
           <button class="seg-btn" data-shape="l">L字</button>
@@ -790,7 +874,7 @@
       </section>
 
       <section class="panel-section">
-        <h2>グリッド</h2>
+        <h2 class="section-title"><span class="title-label">グリッド</span><span class="help-tip" tabindex="0" title="スナップをオンにすると、配置時に目安線に合わせて自然に揃います。間隔を細かくすると細密な配置、広くすると全体把握しやすくなります。" data-tip="スナップをオンにすると、配置時に目安線に合わせて自然に揃います。間隔を細かくすると細密な配置、広くすると全体把握しやすくなります。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <label class="checkbox-row"><input type="checkbox" id="snapToggle" checked> グリッドにスナップ</label>
         <div class="field"><label>グリッド間隔</label>
           <select id="gridSize">
@@ -802,7 +886,7 @@
       </section>
 
       <section class="panel-section">
-        <h2>アイテムを追加</h2>
+        <h2 class="section-title"><span class="title-label">アイテムを追加</span><span class="help-tip" tabindex="0" title="追加したらドラッグで配置し、選択してサイズや角度を調整します。モニターは画面の見え方、ノートPCは軽い配置、デスクトップ本体は縦長にすると自然です。" data-tip="追加したらドラッグで配置し、選択してサイズや角度を調整します。モニターは画面の見え方、ノートPCは軽い配置、デスクトップ本体は縦長にすると自然です。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <div class="add-grid">
           <button class="add-btn" data-type="monitor"><span class="mini-swatch monitor"></span> モニターを追加</button>
           <button class="add-btn" data-type="laptop"><span class="mini-swatch laptop"></span> ノートPCを追加</button>
@@ -811,7 +895,7 @@
       </section>
 
       <section class="panel-section" id="customItemSection">
-        <h2>カスタムアイテム</h2>
+        <h2 class="section-title"><span class="title-label">カスタムアイテム</span><span class="help-tip" tabindex="0" title="自分の機材や小物を自由に追加できます。ラベル名とサイズを決めて、棚・デスク上・床のどこに置くかをレイヤーで管理しましょう。" data-tip="自分の機材や小物を自由に追加できます。ラベル名とサイズを決めて、棚・デスク上・床のどこに置くかをレイヤーで管理しましょう。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <div class="field-grid">
           <div class="field" style="grid-column:1 / -1;"><label>ラベル名</label><input type="text" id="customItemName"
               placeholder="カスタムアイテム" maxlength="24"></div>
@@ -829,7 +913,7 @@
       </section>
 
       <section class="panel-section">
-        <h2>レイヤー</h2>
+        <h2 class="section-title"><span class="title-label">レイヤー</span><span class="help-tip" tabindex="0" title="レイヤーで床・デスク上・棚・アームを分けると、重なりや配置の整理がしやすくなります。統合表示では全体の見え方を確認し、個別表示では細かな調整に向いています。" data-tip="レイヤーで床・デスク上・棚・アームを分けると、重なりや配置の整理がしやすくなります。統合表示では全体の見え方を確認し、個別表示では細かな調整に向いています。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <div class="segmented" id="layerModeToggle">
           <button class="seg-btn active" data-mode="separate">個別表示</button>
           <button class="seg-btn" data-mode="merged">統合表示</button>
@@ -847,7 +931,7 @@
       </section>
 
       <section class="panel-section" id="propsSection" hidden>
-        <h2>選択中のアイテム</h2>
+        <h2 class="section-title"><span class="title-label">選択中のアイテム</span><span class="help-tip" tabindex="0" title="アイテムを選ぶと幅・奥行き・角度・ラベル・レイヤーをその場で調整できます。複製や削除もここから行えるので、微調整の中心になります。" data-tip="アイテムを選ぶと幅・奥行き・角度・ラベル・レイヤーをその場で調整できます。複製や削除もここから行えるので、微調整の中心になります。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <div class="props-title"></div>
         <div class="field-grid">
           <div class="field"><label>幅 (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="幅を減らす">−</button><input type="text" id="propW" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="幅を増やす">＋</button></div></div>
@@ -870,7 +954,7 @@
       </section>
 
       <section class="panel-section">
-        <h2>データ</h2>
+        <h2 class="section-title"><span class="title-label">データ</span><span class="help-tip" tabindex="0" title="JSON出力で保存し、URL共有でリンクを送信できます。取り込み機能を使えば、保存したレイアウトをすぐに元に戻せます。" data-tip="JSON出力で保存し、URL共有でリンクを送信できます。取り込み機能を使えば、保存したレイアウトをすぐに元に戻せます。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
         <div class="data-actions">
           <button class="icon-btn" id="exportJsonBtn">⇩<span>JSON出力</span></button>
           <button class="icon-btn" id="shareUrlBtn">🔗<span>URL共有</span></button>
@@ -883,7 +967,7 @@
 
       <section class="panel-section">
         <div class="list-header">
-          <h2>配置済みアイテム (<span id="itemCount">0</span>)</h2>
+          <h2 class="section-title"><span class="title-label">配置済みアイテム[<span id="itemCount">0</span>]</span><span class="help-tip" tabindex="0" title="一覧からアイテムを選択し、レイヤー順に並べ替えると整理しやすくなります。不要な項目はここから削除して、レイアウトを簡潔に保てます。" data-tip="一覧からアイテムを選択し、レイヤー順に並べ替えると整理しやすくなります。不要な項目はここから削除して、レイアウトを簡潔に保てます。" onmouseover="showHelpTooltip(this, event)" onmousemove="showHelpTooltip(this, event)" onmouseout="hideHelpTooltip()" onfocus="showHelpTooltip(this, { clientX: this.getBoundingClientRect().left + 10, clientY: this.getBoundingClientRect().top + 10 })" onblur="hideHelpTooltip()">?</span></h2>
           <button type="button" class="sort-btn" id="sortLayerBtn">レイヤー順にソート</button>
         </div>
         <ul id="itemList"></ul>
@@ -923,6 +1007,46 @@
 
       const DEFAULT_DESK = { shape: 'i', w: 120, d: 60, corner: 'right', w1: 140, d1: 65, w2: 60, d2: 120 };
 
+      function showHelpTooltip(target, event) {
+        const tooltip = document.getElementById('helpTooltip');
+        if (!tooltip || !target) return;
+        const text = target.dataset.tip || target.getAttribute('title') || target.textContent.trim();
+        if (!text) return;
+
+        tooltip.textContent = text;
+        tooltip.style.opacity = '1';
+        tooltip.style.visibility = 'visible';
+        tooltip.style.transform = 'translateY(0)';
+
+        const clientX = event && typeof event.clientX === 'number' ? event.clientX : target.getBoundingClientRect().left + 12;
+        const clientY = event && typeof event.clientY === 'number' ? event.clientY : target.getBoundingClientRect().top + 12;
+        let x = clientX + 14;
+        let y = clientY + 16;
+
+        const tooltipWidth = tooltip.offsetWidth || 220;
+        const tooltipHeight = tooltip.offsetHeight || 40;
+        if (x + tooltipWidth > window.innerWidth - 12) {
+          x = clientX - tooltipWidth - 12;
+        }
+        if (y + tooltipHeight > window.innerHeight - 12) {
+          y = clientY - tooltipHeight - 12;
+        }
+
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+      }
+
+      function hideHelpTooltip() {
+        const tooltip = document.getElementById('helpTooltip');
+        if (!tooltip) return;
+        tooltip.style.opacity = '0';
+        tooltip.style.visibility = 'hidden';
+        tooltip.style.transform = 'translateY(4px)';
+      }
+
+      window.showHelpTooltip = showHelpTooltip;
+      window.hideHelpTooltip = hideHelpTooltip;
+
       let deskConfig = Object.assign({}, DEFAULT_DESK);
       let items = [];
       let itemCounter = 0;
@@ -940,6 +1064,43 @@
       function init() {
         const viewMode = getViewModeFromParams();
         applyViewMode(viewMode);
+
+        const sidebar = document.getElementById('sidebarPanel');
+        if (sidebar) {
+          let resizing = false;
+          const handle = document.createElement('div');
+          handle.setAttribute('aria-hidden', 'true');
+          handle.style.position = 'absolute';
+          handle.style.top = '0';
+          handle.style.right = '0';
+          handle.style.width = '10px';
+          handle.style.height = '100%';
+          handle.style.cursor = 'col-resize';
+          handle.style.zIndex = '10';
+          sidebar.appendChild(handle);
+
+          const startResize = (event) => {
+            resizing = true;
+            event.preventDefault();
+          };
+
+          const doResize = (event) => {
+            if (!resizing) return;
+            const newWidth = event.clientX - sidebar.getBoundingClientRect().left;
+            const minWidth = 300;
+            const maxWidth = 520;
+            sidebar.style.width = Math.min(Math.max(newWidth, minWidth), maxWidth) + 'px';
+          };
+
+          const stopResize = () => {
+            resizing = false;
+          };
+
+          handle.addEventListener('pointerdown', startResize);
+          window.addEventListener('pointermove', doResize);
+          window.addEventListener('pointerup', stopResize);
+          window.addEventListener('pointercancel', stopResize);
+        }
 
         els.canvas = document.getElementById('canvas');
         els.canvasWrap = document.getElementById('canvasWrap');
