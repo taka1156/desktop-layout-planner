@@ -56,6 +56,57 @@
       font-family: 'IBM Plex Mono', monospace;
     }
 
+    input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .stepper {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--line-strong);
+      background: var(--panel-2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .stepper button {
+      width: 30px;
+      border: none;
+      background: transparent;
+      color: var(--ink-dim);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .stepper button:hover {
+      color: var(--cyan);
+      background: rgba(127, 216, 242, 0.08);
+    }
+
+    .stepper input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      text-align: center;
+      padding: 7px 6px;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    .stepper input:focus {
+      box-shadow: inset 0 0 0 1px var(--cyan);
+    }
+
     .app {
       display: flex;
       height: 100vh;
@@ -713,9 +764,11 @@
         </div>
 
         <div class="field-grid" id="iFields">
-          <div class="field"><label>幅 (cm)</label><input type="number" id="wI" value="120" step="5">
+          <div class="field"><label>幅 (cm)</label>
+            <div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="幅を減らす">−</button><input type="text" id="wI" value="120" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="幅を増やす">＋</button></div>
           </div>
-          <div class="field"><label>奥行き (cm)</label><input type="number" id="dI" value="60" step="5">
+          <div class="field"><label>奥行き (cm)</label>
+            <div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="奥行きを減らす">−</button><input type="text" id="dI" value="60" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="奥行きを増やす">＋</button></div>
           </div>
         </div>
 
@@ -728,10 +781,10 @@
             </div>
           </div>
           <div class="field-grid">
-            <div class="field"><label>本体 幅 (cm)</label><input type="number" id="w1L" value="140" step="5"></div>
-            <div class="field"><label>本体 奥行き (cm)</label><input type="number" id="d1L" value="65" step="5"></div>
-            <div class="field"><label>延長 幅 (cm)</label><input type="number" id="w2L" value="60" step="5"></div>
-            <div class="field"><label>延長 奥行き (cm)</label><input type="number" id="d2L" value="120" step="5"></div>
+            <div class="field"><label>本体 幅 (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="本体幅を減らす">−</button><input type="text" id="w1L" value="140" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="本体幅を増やす">＋</button></div></div>
+            <div class="field"><label>本体 奥行き (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="本体奥行きを減らす">−</button><input type="text" id="d1L" value="65" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="本体奥行きを増やす">＋</button></div></div>
+            <div class="field"><label>延長 幅 (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="延長幅を減らす">−</button><input type="text" id="w2L" value="60" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="延長幅を増やす">＋</button></div></div>
+            <div class="field"><label>延長 奥行き (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="延長奥行きを減らす">−</button><input type="text" id="d2L" value="120" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="延長奥行きを増やす">＋</button></div></div>
           </div>
         </div>
       </section>
@@ -762,8 +815,8 @@
         <div class="field-grid">
           <div class="field" style="grid-column:1 / -1;"><label>ラベル名</label><input type="text" id="customItemName"
               placeholder="カスタムアイテム" maxlength="24"></div>
-          <div class="field"><label>幅 (cm)</label><input type="number" id="customItemW" value="40" step="1"></div>
-          <div class="field"><label>奥行き (cm)</label><input type="number" id="customItemD" value="15" step="1"></div>
+          <div class="field"><label>幅 (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="幅を減らす">−</button><input type="text" id="customItemW" value="40" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="幅を増やす">＋</button></div></div>
+          <div class="field"><label>奥行き (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="奥行きを減らす">−</button><input type="text" id="customItemD" value="15" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="奥行きを増やす">＋</button></div></div>
           <div class="field" style="grid-column:1 / -1;"><label>レイヤー</label><select id="customItemLayer">
               <option value="arm">アーム</option>
               <option value="desk" selected>デスク上</option>
@@ -797,9 +850,9 @@
         <h2>選択中のアイテム</h2>
         <div class="props-title"></div>
         <div class="field-grid">
-          <div class="field"><label>幅 (cm)</label><input type="number" id="propW"></div>
-          <div class="field"><label>奥行き (cm)</label><input type="number" id="propD"></div>
-          <div class="field"><label>角度 (°)</label><input type="number" id="propRot" min="0" max="360" step="1"></div>
+          <div class="field"><label>幅 (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="幅を減らす">−</button><input type="text" id="propW" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="幅を増やす">＋</button></div></div>
+          <div class="field"><label>奥行き (cm)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="奥行きを減らす">−</button><input type="text" id="propD" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="奥行きを増やす">＋</button></div></div>
+          <div class="field"><label>角度 (°)</label><div class="stepper"><button type="button" class="stepper-btn stepper-down" aria-label="角度を減らす">−</button><input type="text" id="propRot" inputmode="numeric"><button type="button" class="stepper-btn stepper-up" aria-label="角度を増やす">＋</button></div></div>
           <div class="field" style="grid-column:1 / -1;"><label>ラベル名</label><input type="text" id="propLabel"
               maxlength="24"></div>
           <div class="field" style="grid-column:1 / -1;"><label>レイヤー</label><select id="propLayer">
@@ -920,6 +973,8 @@
 
         bindNum('wI', 'w'); bindNum('dI', 'd');
         bindNum('w1L', 'w1'); bindNum('d1L', 'd1'); bindNum('w2L', 'w2'); bindNum('d2L', 'd2');
+        bindStepper('wI', 1); bindStepper('dI', 1);
+        bindStepper('w1L', 1); bindStepper('d1L', 1); bindStepper('w2L', 1); bindStepper('d2L', 1);
 
         document.getElementById('snapToggle').addEventListener('change', e => { snapEnabled = e.target.checked; });
         document.getElementById('gridSize').addEventListener('change', e => { gridSize = parseFloat(e.target.value); renderAll(); });
@@ -969,6 +1024,7 @@
         els.propW.addEventListener('input', () => updateSelectedDims());
         els.propD.addEventListener('input', () => updateSelectedDims());
         els.propRot.addEventListener('input', () => updateSelectedRotation());
+        bindStepper('propW', 1); bindStepper('propD', 1); bindStepper('propRot', 1);
         els.propLabel.addEventListener('input', () => updateSelectedLabel());
         els.propLayer.addEventListener('change', () => updateSelectedLayer());
         document.getElementById('rotateBtn').addEventListener('click', rotateSelected);
@@ -1060,6 +1116,40 @@
           const v = parseFloat(el.value);
           if (!isNaN(v) && v > 0) deskConfig[field] = v;
           renderAll();
+        });
+      }
+
+      function bindStepper(inputId, stepValue = 1) {
+        const el = document.getElementById(inputId);
+        if (!el) return;
+        const wrap = el.closest('.stepper');
+        if (!wrap) return;
+        const downBtn = wrap.querySelector('.stepper-down');
+        const upBtn = wrap.querySelector('.stepper-up');
+        if (!downBtn || !upBtn) return;
+
+        function currentValue() {
+          const parsed = Number.parseFloat(el.value);
+          return Number.isFinite(parsed) ? parsed : 0;
+        }
+
+        function applyValue(next) {
+          const value = Number.isFinite(next) ? next : 0;
+          el.value = String(value);
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        downBtn.addEventListener('click', () => applyValue(currentValue() - stepValue));
+        upBtn.addEventListener('click', () => applyValue(currentValue() + stepValue));
+        el.addEventListener('keydown', e => {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            applyValue(currentValue() - stepValue);
+          }
+          if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            applyValue(currentValue() + stepValue);
+          }
         });
       }
 
