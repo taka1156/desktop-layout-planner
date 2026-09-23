@@ -1,0 +1,31 @@
+{
+    "name": "desktop-layout-plannner",
+    "dockerComposeFile": "/docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "postCreateCommand": "yarn install",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "MS-CEINTL.vscode-language-pack-ja",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "streetsidesofware.code-spell-checker",
+                "username.errorlens"
+            ]
+        },
+        "settings": {
+            "terminal.integrated.defaultProfile.linux": "bash",
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "editor.formatOnSave": true,
+            "editor.codeActionOnSave": {
+                "source.fixAll.eslint": "explicit"
+            },
+            "eslint.codeActionOnSave.mode": "all",
+            "eslint.format.enable": "false",
+            "prettier": {
+                "configPath": ".prettier.json"
+            }
+        }
+    }
+}
