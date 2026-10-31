@@ -24,5 +24,16 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3"
   },
-  "packageManager": "pnpm@12.16.1"
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.13.0",
+      "onFail": "download"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.16.1",
+      "onFail": "download"
+    }
+  }
 }
