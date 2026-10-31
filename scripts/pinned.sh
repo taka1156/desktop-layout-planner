@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pin-env.sh
+# pinned.sh
 # 現在解決されている Node / pnpm のバージョンを読み取り、
 # プロジェクトのファイルに書き出して固定する。
 #
