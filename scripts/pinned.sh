@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pinned.sh
+# pin-env.sh
 # 現在解決されている Node / pnpm のバージョンを読み取り、
 # プロジェクトのファイルに書き出して固定する。
 #
@@ -13,7 +13,6 @@ set -euo pipefail
 NODE_MODE="full"   # full: 24.17.0 / major: 24
 FORCE=0
 DRY=0
-INSTALL=0
 CHECK=0
 NODE_OVERRIDE=""
 PNPM_OVERRIDE=""
@@ -27,7 +26,6 @@ usage() {
   --pnpm <ver>        pnpm のバージョンを指定(自動検出しない)
   --force             既存の固定値を上書きする
   --dry-run           書き込まず、何を変更するかだけ表示する
-  --install           固定後に vp install を実行してロックファイルを更新する
   --check             書き込まず、固定されているかだけ検証する(CI 向け、未固定なら exit 1)
   -h, --help          このヘルプを表示
 
@@ -42,7 +40,6 @@ while [[ $# -gt 0 ]]; do
     --pnpm)       PNPM_OVERRIDE="${2:?--pnpm にはバージョンが必要です}"; shift 2 ;;
     --force)      FORCE=1; shift ;;
     --dry-run)    DRY=1; shift ;;
-    --install)    INSTALL=1; shift ;;
     --check)      CHECK=1; shift ;;
     -h|--help)    usage; exit 0 ;;
     *) echo "不明なオプション: $1" >&2; usage >&2; exit 2 ;;
@@ -154,14 +151,7 @@ NODE
 }
 write_package_manager
 
-# ---------------------------------------------------------------- vp install / doctor
-if [[ $INSTALL -eq 1 && $DRY -eq 0 ]]; then
-  command -v vp >/dev/null 2>&1 || die "vp が見つからないため --install を実行できません。"
-  log ""
-  log "vp install を実行します"
-  vp install
-fi
-
+# ---------------------------------------------------------------- vp env doctor
 if [[ $DRY -eq 0 ]] && command -v vp >/dev/null 2>&1; then
   log ""
   log "vp env doctor の結果"
@@ -169,5 +159,4 @@ if [[ $DRY -eq 0 ]] && command -v vp >/dev/null 2>&1; then
 fi
 
 log ""
-log "完了。.node-version、package.json、ロックファイルをコミットしてください。"
-log "コンテナ・CI では vp install --frozen-lockfile を使います。"
+log "完了。.node-version と package.json をコミットしてください。"
