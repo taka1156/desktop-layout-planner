@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# pin-env.sh
-# 現在解決されている Node / pnpm / vp のバージョンを読み取り、
+# pinned.sh
+# 現在解決されている Node / pnpm のバージョンを読み取り、
 # プロジェクトのファイルに書き出して固定する。
 #
 #   .node-version        ← Node のバージョン
 #   package.json         ← "packageManager": "pnpm@x.y.z"
-#   codespacegen.json    ← runCommand 内の vite.plus インストーラに VP_VERSION=x.y.z を追記
 #
 # 何度実行しても同じ結果になる(冪等)。既存の値は --force を付けない限り上書きしない。
 
@@ -18,8 +17,6 @@ INSTALL=0
 CHECK=0
 NODE_OVERRIDE=""
 PNPM_OVERRIDE=""
-VP_OVERRIDE=""
-CSG_FILE="codespacegen.json"
 
 usage() {
   cat <<'EOF'
@@ -28,8 +25,6 @@ usage() {
   --node-major        Node はメジャーのみ固定する(例: 24)。既定は完全なバージョン
   --node <ver>        Node のバージョンを指定(自動検出しない)
   --pnpm <ver>        pnpm のバージョンを指定(自動検出しない)
-  --vp <ver>          vp のバージョンを指定(自動検出しない)
-  --csg <path>        codespacegen.json のパス(既定: ./codespacegen.json)
   --force             既存の固定値を上書きする
   --dry-run           書き込まず、何を変更するかだけ表示する
   --install           固定後に vp install を実行してロックファイルを更新する
@@ -45,8 +40,6 @@ while [[ $# -gt 0 ]]; do
     --node-major) NODE_MODE="major"; shift ;;
     --node)       NODE_OVERRIDE="${2:?--node にはバージョンが必要です}"; shift 2 ;;
     --pnpm)       PNPM_OVERRIDE="${2:?--pnpm にはバージョンが必要です}"; shift 2 ;;
-    --vp)         VP_OVERRIDE="${2:?--vp にはバージョンが必要です}"; shift 2 ;;
-    --csg)        CSG_FILE="${2:?--csg にはパスが必要です}"; shift 2 ;;
     --force)      FORCE=1; shift ;;
     --dry-run)    DRY=1; shift ;;
     --install)    INSTALL=1; shift ;;
@@ -101,15 +94,9 @@ if [[ -z "$PNPM_VER" ]] && command -v pnpm >/dev/null 2>&1; then
   PNPM_VER="$(pnpm --version 2>/dev/null | detect_semver)"
 fi
 
-VP_VER="$VP_OVERRIDE"
-if [[ -z "$VP_VER" ]] && command -v vp >/dev/null 2>&1; then
-  VP_VER="$(vp --version 2>/dev/null | detect_semver)"
-fi
-
 log "検出したバージョン"
 log "  node : ${NODE_VER}  (固定値: ${NODE_PIN})"
 log "  pnpm : ${PNPM_VER:-(未検出)}"
-log "  vp   : ${VP_VER:-(未検出)}"
 [[ $DRY -eq 1 ]] && log "(--dry-run: 書き込みは行いません)"
 log ""
 
@@ -166,61 +153,6 @@ console.log(`package.json: packageManager を ${want} に設定しました`);
 NODE
 }
 write_package_manager
-
-# ---------------------------------------------------------------- codespacegen.json の VP_VERSION
-write_vp_version() {
-  if [[ ! -f "$CSG_FILE" ]]; then
-    log "${CSG_FILE}: 見つからないためスキップします"; return
-  fi
-  if [[ -z "$VP_VER" ]]; then
-    warn "vp のバージョンを検出できなかったため、${CSG_FILE} は変更しません(--vp で指定できます)。"; return
-  fi
-  CSG_FILE="$CSG_FILE" VP_VER="$VP_VER" FORCE="$FORCE" DRY="$DRY" node - <<'NODE'
-const fs = require('fs');
-const file = process.env.CSG_FILE;
-const ver = process.env.VP_VER;
-const raw = fs.readFileSync(file, 'utf8');
-const m = raw.match(/^([ \t]+)"/m);
-const indent = m ? m[1] : '\t';
-const cfg = JSON.parse(raw);
-let changed = 0;
-let touched = 0;
-for (const lang of cfg.langs || []) {
-  if (typeof lang.runCommand !== 'string') continue;
-  if (!/vite\.plus\s*\|/.test(lang.runCommand)) continue;
-  touched++;
-  const cur = lang.runCommand.match(/VP_VERSION=(\S+)/);
-  let next;
-  if (cur) {
-    if (cur[1] === ver) continue;
-    if (process.env.FORCE !== '1') {
-      console.error(`警告: ${lang.profileName} は既に VP_VERSION=${cur[1]} です。上書きするには --force を付けてください。`);
-      continue;
-    }
-    next = lang.runCommand.replace(/VP_VERSION=\S+/, `VP_VERSION=${ver}`);
-  } else {
-    next = lang.runCommand.replace(/(vite\.plus\s*\|\s*)/, `$1VP_VERSION=${ver} `);
-  }
-  lang.runCommand = next;
-  changed++;
-}
-if (touched === 0) {
-  console.log(`${file}: vite.plus を使う runCommand がないためスキップします`);
-  process.exit(0);
-}
-if (changed === 0) {
-  console.log(`${file}: 変更なし`);
-  process.exit(0);
-}
-if (process.env.DRY === '1') {
-  console.log(`${file}: ${changed} 件の runCommand に VP_VERSION=${ver} を設定します(dry-run)`);
-  process.exit(0);
-}
-fs.writeFileSync(file, JSON.stringify(cfg, null, indent) + '\n');
-console.log(`${file}: ${changed} 件の runCommand に VP_VERSION=${ver} を設定しました`);
-NODE
-}
-write_vp_version
 
 # ---------------------------------------------------------------- vp install / doctor
 if [[ $INSTALL -eq 1 && $DRY -eq 0 ]]; then
